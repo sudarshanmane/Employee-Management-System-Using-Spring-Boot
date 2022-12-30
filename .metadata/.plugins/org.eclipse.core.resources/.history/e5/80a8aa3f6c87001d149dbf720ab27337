@@ -1,0 +1,13 @@
+package com.employee.model;
+
+import java.time.LocalDateTime;
+
+public class EmployeeExceptionDetails {
+	
+	private LocalDateTime dateTime;
+	private String message;
+	private String desc;
+	
+	
+
+}

@@ -1,0 +1,38 @@
+package com.employee.controller;
+
+import java.time.LocalDateTime;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.employee.model.Employee;
+import com.employee.service.EmployeeService;
+import com.employee.service.EmployeeServiceInter;
+
+@RestController
+public class EmployeeController {
+	
+	@Autowired
+	private EmployeeService service;
+	
+	@GetMapping("/hello")
+	public ResponseEntity<String> welcomeToEmployeeManagementSystem(){
+		return new ResponseEntity<String>("Welcome to Employee Management System", HttpStatus.ACCEPTED);	
+	}
+	
+	@PostMapping("/saveEmployee")
+	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee){
+		employee.setRegistration_Date(LocalDateTime.now());
+		return new ResponseEntity<Employee>(employee, HttpStatus.ACCEPTED);
+	}
+	
+	
+	
+}

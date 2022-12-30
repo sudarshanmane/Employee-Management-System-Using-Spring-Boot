@@ -1,0 +1,104 @@
+package com.employee.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.employee.exception.EmployeeException;
+import com.employee.model.Employee;
+import com.employee.model.EmployeeExceptionDetails;
+import com.employee.repository.EmployeeDao;
+
+@Service
+public class EmployeeService implements EmployeeServiceInter{
+
+	@Autowired
+	private EmployeeDao dao;
+	
+//	[[[[[[[[[[[[[[[ Save Employee ]]]]]]]]]]]]]]]
+	
+	@Override
+	public Employee saveEmployee(Employee employee) throws EmployeeException {
+		
+		Employee employee2 = dao.findByEmail(employee.getEmail()); 
+		
+		System.out.println("inside service saveEmployee");
+		
+		if(employee2 == null) {
+			Employee employee3 = dao.save(employee);
+			return employee3;
+		}else {
+			throw new EmployeeException("Employee already exists having email " + 
+		       employee.getEmail());		
+		}
+		
+	}
+	
+//	{{{{{{{{{{{{{{{{{ Get Employee By Id }}}}}}}}}}}}}}}}}
+	
+	public Employee getEmployeeById(int id) throws EmployeeException {
+		
+		Optional<Employee> employee = dao.findById(id);
+		
+		if(employee.isPresent()){
+			return employee.get();
+		}else {
+			throw new EmployeeException("Employee Not Found");
+		}		
+	}
+	
+//	{{{{{{{{{{{{{{{ Get Employee By Email }}}}}}}}}}}}}}}
+	
+	public Employee getEmployeeByEmail(String email) throws EmployeeException {
+		
+		Employee employee = dao.findByEmail(email);
+		
+		if(employee != null){
+			return employee;
+		}else {
+			throw new EmployeeException("No Employee Found Having Employee email: " + email);
+		}		
+	}
+	
+//	{{{{{{{{{{{{{{{ Update Employee By Id }}}}}}}}}}}}}}}
+	
+	public Employee updateEmployeeById(Employee employee) throws EmployeeException {
+		
+		Optional<Employee> employee1 = dao.findById(employee.getId());
+		
+		if(employee1 != null){
+			
+			employee.setRegistration_Date(employee1.get().getRegistration_Date());
+			
+			
+			if(employee.getName() == null) {
+				employee.setName(employee1.get().getName());
+			}
+			
+			if(employee.getAddress() == null) {
+				employee.setAddress(employee1.get().getAddress());
+			}
+			
+			if(employee.getEmail().isEmpty() == null ){
+				employee.setEmail(employee1.get().getEmail());
+			}
+			
+			if(employee.getSalary() != null) {
+				employee.setSalary(employee1.get().getSalary());
+			}
+			
+			return dao.save(employee);
+		}else {
+			throw new EmployeeException("No Employee Found Having Employee id : " + employee.getId());		
+		}
+	
+	}
+	
+//	{{{{{{{{{{{{{{ update employee by Email }}}}}}}}}}}}}}
+	
+//	public Employee 
+	
+	
+	
+}

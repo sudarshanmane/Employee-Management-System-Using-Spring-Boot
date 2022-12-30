@@ -1,0 +1,100 @@
+package com.employee.controller;
+
+import java.time.LocalDateTime;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.employee.exception.EmployeeException;
+import com.employee.model.Employee;
+import com.employee.service.EmployeeService;
+
+@RestController
+public class EmployeeController {
+	
+	@Autowired
+	private EmployeeService service;
+	
+	@GetMapping("/hello")
+	public ResponseEntity<String> welcomeToEmployeeManagementSystem(){
+		return new ResponseEntity<String>("Welcome to Employee Management System", HttpStatus.ACCEPTED);	
+	}
+	
+//	{{{{{{{{{{{{{{{ save employee }}}}}}}}}}}}}}}
+	
+	@PostMapping("/saveEmployee")
+	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee) throws EmployeeException{
+		employee.setRegistration_Date(LocalDateTime.now());
+		
+		Employee employee2 = service.saveEmployee(employee);
+		
+		return new ResponseEntity<Employee>(employee2, HttpStatus.ACCEPTED);
+	}
+	
+
+//	{{{{{{{{{{{{ Get Employee By Id }}}}}}}}}}}}
+	
+	@GetMapping("/getEmployeeById/{id}")
+	public ResponseEntity<Employee> getById(@PathVariable Integer id) throws EmployeeException{
+		
+		Employee employee = service.getEmployeeById(id);
+		return new ResponseEntity<Employee>(employee,HttpStatus.FOUND);
+		
+	}
+	
+//	{{{{{{{{{{{{ Get Employee By Email }}}}}}}}}}}}
+	
+	@GetMapping("/getByEmployeeByEmail")
+	public ResponseEntity<Employee> getEmployeeByEmail(@RequestParam String email) throws EmployeeException {
+		
+		Employee employee = service.getEmployeeByEmail(email);
+		return new ResponseEntity<Employee>(employee, HttpStatus.FOUND);	
+	}
+	
+//	{{{{{{{{{{{{ Update Employee by Id }}}}}}}}}}}}
+	
+	@PutMapping("/udpateEmployeeById")
+	public ResponseEntity<Employee> updateEmployeeById(@RequestBody Employee employee) throws EmployeeException{
+		
+		Employee employee2 = service.updateEmployeeById(employee);
+		return new ResponseEntity<Employee>(employee2,HttpStatus.OK);		
+	}
+	
+	
+//	{{{{{{{{{{{{{{ Delete Employee By Id }}}}}}}}}}}}}}
+	
+	@DeleteMapping("/deleteEmployeeById")
+	public ResponseEntity<String> deleteById(@RequestParam("id") Integer id) throws EmployeeException{
+
+		String message = service.deleteEmployeeById(id);
+		return new ResponseEntity<String>(message,HttpStatus.OK);		
+	}
+	
+//	{{{{{{{{{{{{{{ Delete Employee By Email }}}}}}}}}}}}}}
+	
+	@DeleteMapping("/deleteEmployeeByEmail")
+	public ResponseEntity<String> deleteByEmail(@RequestParam("email") String email) throws EmployeeException{
+
+		String message = service.deleteEmployeeByEmail(email);
+		return new ResponseEntity<String>(message,HttpStatus.OK);		
+		
+	}
+
+
+	
+	
+	
+	
+	
+}

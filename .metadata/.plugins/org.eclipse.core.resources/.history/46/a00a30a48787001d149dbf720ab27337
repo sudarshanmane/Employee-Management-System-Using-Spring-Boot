@@ -1,0 +1,9 @@
+package com.employee.service;
+
+import com.employee.model.EmployeeExceptionDetails;
+
+public interface EmployeeInterface {
+	
+	public Employee saveEmployee(Employee employee) throws EmployeeException;
+
+}

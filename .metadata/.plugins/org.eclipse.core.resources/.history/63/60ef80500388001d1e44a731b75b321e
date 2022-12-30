@@ -1,0 +1,151 @@
+package com.employee.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.catalina.connector.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.employee.exception.EmployeeException;
+import com.employee.model.Employee;
+import com.employee.repository.EmployeeDao;
+
+@Service
+public class EmployeeService implements EmployeeServiceInter{
+
+	@Autowired
+	private EmployeeDao dao;
+	
+//	[[[[[[[[[[[[[[[ Save Employee ]]]]]]]]]]]]]]]
+	
+	@Override
+	public Employee saveEmployee(Employee employee) throws EmployeeException {
+		
+		Employee employee2 = dao.findByEmail(employee.getEmail()); 
+		
+		System.out.println("inside service saveEmployee");
+		
+		if(employee2 == null) {
+			Employee employee3 = dao.save(employee);
+			return employee3;
+		}else {
+			throw new EmployeeException("Employee already exists having email " + 
+		       employee.getEmail());		
+		}
+		
+	}
+	
+//	{{{{{{{{{{{{{{{{{ Get Employee By Id }}}}}}}}}}}}}}}}}
+	
+	public Employee getEmployeeById(int id) throws EmployeeException {
+		
+		Optional<Employee> employee = dao.findById(id);
+		
+		if(employee.isPresent()){
+			return employee.get();
+		}else {
+			throw new EmployeeException("Employee Not Found");
+		}		
+	}
+	
+//	{{{{{{{{{{{{{{{ Get Employee By Email }}}}}}}}}}}}}}}
+	
+	public Employee getEmployeeByEmail(String email) throws EmployeeException {
+		
+		Employee employee = dao.findByEmail(email);
+		
+		if(employee != null){
+			return employee;
+		}else {
+			throw new EmployeeException("No Employee Found Having Employee email : " + email);
+		}		
+	}
+	
+//	{{{{{{{{{{{{{{{ Update Employee By Id }}}}}}}}}}}}}}}
+	
+	public Employee updateEmployeeById(Employee employee) throws EmployeeException {
+		
+		Optional<Employee> employee1 = dao.findById(employee.getId());
+		
+		if(employee1 != null){
+			
+			employee.setRegistration_Date(employee1.get().getRegistration_Date());
+			
+			if(employee.getName() == null) {
+				employee.setName(employee1.get().getName());
+			}
+			
+			if(employee.getAddress() == null) {
+				employee.setAddress(employee1.get().getAddress());
+			}
+			
+			if(employee.getEmail() == null ){
+				employee.setEmail(employee1.get().getEmail());
+			}
+			
+			if(employee.getSalary() != null) {
+				employee.setSalary(employee1.get().getSalary());
+			}
+			
+			return dao.save(employee);
+		}else {
+			throw new EmployeeException("No Employee Found Having Employee id : " + employee.getId());		
+		}
+	
+	}
+	
+//	{{{{{{{{{{{{{{  Delete Employee By Id }}}}}}}}}}}}}}
+	
+	public String deleteEmployeeById(Integer id) throws EmployeeException {
+
+		Optional<Employee> optional = dao.findById(id);
+		if(optional.isPresent()){
+			dao.deleteById(id);
+			return "Employee details having id as " + id + " deleted"; 
+		}else {
+			throw new EmployeeException("No employee found having id as : " + id);
+		}
+		
+	}
+	
+//	{{{{{{{{{{{{{{{{{ Delete Employee By email }}}}}}}}}}}}}}}}}
+	
+	public String deleteEmployeeByEmail(String email) throws EmployeeException {
+
+		System.out.println("inside deleteEmployeeByEmail Controller");
+
+		Employee employee = dao.checkEmail(email);
+		
+		if(employee != null){
+			
+			dao.deleteById(employee.getId());
+			
+			return "Employee details having email as " + email + " deleted"; 
+			
+		}else {
+			throw new EmployeeException("No employee found having email as : " + email);
+		}	
+	}
+	
+//	{{{{{{{{{{{{{{{{{ get Emplpoyee By }}}}}}}}}}}}}}}}}
+	
+	public List<Employee> getTop5EmplyeeHavingMaxSalary() throws EmployeeException{
+		
+		return dao.findTop5ByOrderBySalary();
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+}
